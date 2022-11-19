@@ -6,6 +6,7 @@
 #define I2C_SCL 16
 
 TwoWire I2CMPU = TwoWire(0);
+TwoWire I2CRTC = TwoWire(0);
 
 MPU6050 mpu6050(I2CMPU);
 
@@ -18,8 +19,12 @@ void setup() {
   I2CMPU.begin(I2C_SDA, I2C_SCL, 100000);
   mpu6050.begin();
   mpu6050.calcGyroOffsets(true);
+  
+  I2CRTC.begin(I2C_SDA, I2C_SCL, 100000);
+  bool status;
+  status = rtc.begin(&I2CRTC);
   // put your setup code here, to run once:
-    if (! rtc.begin()) {
+    if (! status) {
       Serial.println("Couldn't find RTC");
       while (1);
     }
@@ -29,9 +34,8 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-//  DateTime now = rtc.now();
-//  Serial.println(String(daysOfTheWeek[now.dayOfTheWeek()]) + "," + String(now.hour(), DEC) + ":" + String(now.minute(), DEC) + ":" + String(now.second(), DEC));
-//  delay(100);
+  DateTime now = rtc.now();
+  Serial.println(String(daysOfTheWeek[now.dayOfTheWeek()]) + "," + String(now.hour(), DEC) + ":" + String(now.minute(), DEC) + ":" + String(now.second(), DEC));
   mpu6050.update();
   Serial.print("angleX : ");
   Serial.print(mpu6050.getAngleX());
